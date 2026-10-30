@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>大学生抽象人格图鉴</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #333;
+  }
+  .container {
+    width: 100%;
+    max-width: 480px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+  .screen { display: none; padding: 32px 24px; }
+  .screen.active { display: block; }
+  h1 { font-size: 26px; text-align: center; margin-bottom: 8px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 24px; }
+  .type-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 24px; }
+  .type-chip { padding: 6px 12px; background: #f0f0f8; border-radius: 16px; font-size: 13px; color: #667eea; }
+  .start-desc { font-size: 15px; line-height: 1.7; color: #555; margin-bottom: 24px; }
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+  .btn-secondary { background: #f0f0f5; color: #555; margin-top: 12px; }
+  .progress-bar { height: 6px; background: #eee; border-radius: 3px; margin-bottom: 24px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 3px; transition: width 0.3s; }
+  .q-text { font-size: 17px; font-weight: 600; line-height: 1.5; margin-bottom: 20px; }
+  .q-tag { display: inline-block; padding: 2px 10px; background: #eef0ff; color: #667eea; border-radius: 10px; font-size: 12px; margin-bottom: 10px; }
+  .option {
+    display: block;
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: #f7f7fb;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    font-size: 15px;
+    line-height: 1.5;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: #333;
+  }
+  .option:active { background: #eef0ff; border-color: #667eea; }
+  .result-emoji { font-size: 64px; text-align: center; margin-bottom: 12px; }
+  .result-tag { display: inline-block; padding: 6px 16px; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border-radius: 20px; font-size: 18px; font-weight: 700; margin: 0 auto 20px; }
+  .result-center { text-align: center; }
+  .result-desc { font-size: 15px; line-height: 1.8; color: #444; margin-bottom: 16px; }
+  .radar-wrap { text-align: center; margin-bottom: 16px; }
+  .radar-title { font-size: 14px; color: #888; margin-bottom: 8px; }
+  #radarCanvas { max-width: 280px; width: 100%; height: auto; }
+  .result-section { background: #f7f7fb; border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; font-size: 14px; line-height: 1.6; }
+  .result-section strong { color: #667eea; }
+  .notice {
+    margin-top: 24px;
+    padding: 12px;
+    background: #fff8e1;
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #8d6e00;
+    text-align: center;
+  }
+  .share-hint { text-align: center; color: #888; font-size: 13px; margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 开始页 -->
+  <div class="screen active" id="start">
+    <h1>大学生抽象人格图鉴</h1>
+    <p class="subtitle">3分钟 · 10道题 · 8种人格 · 测出你的校园属性</p>
+    <div class="type-list">
+      <span class="type-chip">🎯 ddl战神</span>
+      <span class="type-chip">👑 卷王本王</span>
+      <span class="type-chip">🛌 天赋型摆烂</span>
+      <span class="type-chip">🎭 精神状态稳定型疯子</span>
+      <span class="type-chip">🤐 社恐话痨</span>
+      <span class="type-chip">🧘 佛系边缘人</span>
+      <span class="type-chip">😵 快乐小糊涂</span>
+      <span class="type-chip">🎨 纯抽象艺术家</span>
+    </div>
+    <div class="start-desc">
+      早八、ddl、食堂、生活费、crush……<br>
+      每一道题都像在你家装了监控。<br>
+      你是 ddl战神、佛系边缘人，<br>
+      还是隐藏的天赋型摆烂？<br><br>
+      <strong>测完不准不要钱（开玩笑的😂）</strong>
+    </div>
+    <button class="btn btn-primary" onclick="startTest()">开始测试</button>
+    <div class="notice">
+      ⚠️ 本测试仅供娱乐，非专业心理测评，结果不构成任何诊断或建议。建议16岁以上用户参与。
+    </div>
+  </div>
+
+  <!-- 题目页 -->
+  <div class="screen" id="quiz">
+    <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+    <span class="q-tag" id="qTag"></span>
+    <p class="q-text" id="qText"></p>
+    <div id="options"></div>
+  </div>
+
+  <!-- 结果页 -->
+  <div class="screen" id="result">
+    <div class="result-center">
+      <div class="result-emoji" id="rEmoji"></div>
+      <div class="result-tag" id="rTag"></div>
+    </div>
+    <p class="result-desc" id="rDesc"></p>
+    <div class="radar-wrap">
+      <p class="radar-title">📊 你的四维属性</p>
+      <canvas id="radarCanvas" width="280" height="280"></canvas>
+    </div>
+    <div class="result-section" id="rEval"></div>
+    <div class="result-section" id="rAdvice"></div>
+    <button class="btn btn-primary" onclick="shareResult()">截图分享给室友</button>
+    <button class="btn btn-secondary" onclick="restart()">再测一次</button>
+    <p class="share-hint">💡 测完发给朋友，看看你们是不是同类</p>
+    <div class="notice">
+      ⚠️ 本测试仅供娱乐，非专业心理测评，结果不构成任何诊断或建议。如有心理困扰请寻求专业帮助。
+    </div>
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  { tag: "灵魂拷问", q: "早八第一节课，你的真实状态是？", opts: [
+    "提前10分钟到教室坐第一排，咖啡在手",
+    "卡点冲进教室，找个靠后的位置趴下",
+    "闹钟响了8次，最后选择继续睡，醒来假装自己去过了",
+    "人到了，魂还在床上，整节课盯着黑板发呆"
+  ]},
+  { tag: "如果是你", q: "老师布置了一篇3000字论文，ddl是下周一，你会？", opts: [
+    "当天就开始查资料列大纲，稳扎稳打",
+    "周末再写，相信自己的爆发力",
+    "ddl前一晚才打开文档，一边哭一边写",
+    "先玩再说，到时候再说，车到山前必有路"
+  ]},
+  { tag: "真实反应", q: "群里老师@所有人通知事情，你的反应是？", opts: [
+    "立刻回复\"收到\"",
+    "等别人先回，你跟着回",
+    "已读不回，心里默念\"知道了\"",
+    "根本没看到，三天后才发现消息99+"
+  ]},
+  { tag: "花钱哲学", q: "月初生活费到账，你的第一个念头是？", opts: [
+    "先存一半，剩下的慢慢花，精打细算",
+    "先把购物车清了再说，今朝有酒今朝醉",
+    "犒劳自己吃顿好的，然后开始吃土",
+    "没概念，反正月底一定没钱，花就完了"
+  ]},
+  { tag: "生存难题", q: "食堂今天的菜你都不爱吃，你会？", opts: [
+    "随便打两个，吃饱就行，不挑食",
+    "转身去校外吃，不能亏待自己",
+    "点外卖，虽然昨天刚点过",
+    "不吃了，回宿舍啃零食，主打一个随意"
+  ]},
+  { tag: "社交现场", q: "室友突然说\"我们要不要一起出去旅游？\"，你的内心OS是？", opts: [
+    "好啊好啊，去哪玩？我来做攻略！",
+    "可以啊，但我没钱……（但还是想去）",
+    "完了又要社交，能不能只出钱不出人",
+    "我不去，你们玩得开心（其实有点想去）"
+  ]},
+  { tag: "考前实录", q: "考试前一天晚上，你在干嘛？", opts: [
+    "已经复习完了，在刷手机放松",
+    "临时抱佛脚，主打一个心理安慰",
+    "在搜\"一晚上能学完一门课吗\"",
+    "已经放弃了，在刷别人的锦鲤帖子"
+  ]},
+  { tag: "生存法则", q: "社团/部门开会，你通常坐在？", opts: [
+    "最前面，认真记笔记，偶尔发言",
+    "中间，该说的时候说两句",
+    "最后面，能不说话就不说话",
+    "角落，随时准备溜，主打一个隐身"
+  ]},
+  { tag: "心动时刻", q: "你crush了一个人，你的行动是？", opts: [
+    "直接冲，主动找话题聊天，主打一个勇敢",
+    "每天看ta朋友圈八百遍，但从不点赞",
+    "让室友帮忙打听，但自己不敢上",
+    "crush三天就淡了，下一个更乖"
+  ]},
+  { tag: "终极一问", q: "如果用一个词形容你的大学生活，你会选？", opts: [
+    "充实——每天都有事情干",
+    "混乱——但好像也挺快乐",
+    "佛系——都行，可以，没关系",
+    "抽象——我自己也看不懂"
+  ]}
+];
+
+const results = {
+  ddl: {
+    emoji: "🎯",
+    tag: "ddl战神",
+    desc: "你的人生信条是\"deadline是第一生产力\"。平时能拖则拖，但只要ddl倒计时开始，你的手速、专注力和咖啡消耗量会呈指数级上升。你创造过一晚写完3000字论文的奇迹，也经历过提交前5分钟发现格式全错的崩溃。你不是在赶ddl，就是在赶ddl的路上。",
+    eval: "<strong>身边人对你的评价：</strong>\"怎么你每次都说来不及，最后又都写完了？\"",
+    advice: "<strong>💡 小建议：</strong>试试把ddl人为提前24小时，你会发现自己其实没那么极限。"
+  },
+  juan: {
+    emoji: "👑",
+    tag: "卷王本王",
+    desc: "你是那种嘴上说\"我都没复习\"，结果考了90分的人。表面佛系，背地里偷偷努力。你的卷是润物细无声的——别人在刷剧，你在背单词；别人在睡觉，你在做实习。你不声张，但你的绩点和简历会替你说话。你不是想卷，是停不下来。",
+    eval: "<strong>你的隐藏技能：</strong>在所有人都以为你在躺平时，悄悄完成了别人三倍的工作量。",
+    advice: "<strong>💡 小建议：</strong>偶尔也让自己喘口气，你已经很优秀了，不用每次都拿第一。"
+  },
+  bailan: {
+    emoji: "🛌",
+    tag: "天赋型摆烂",
+    desc: "你不是不行，你是不想。你的能力完全够拿奖学金，但你选择把时间花在更\"重要\"的事情上——比如追完一部剧、研究一家好吃的外卖、和室友开黑到凌晨。你见过太多人卷得死去活来，觉得大可不必。你有你的节奏，虽然看起来像在摆烂，但关键时刻你总能掉链子……啊不，总能顶住。",
+    eval: "<strong>你的人生格言：</strong>\"我不是摆烂，我是战略性休息。\"",
+    advice: "<strong>💡 小建议：</strong>天赋是底牌，但别一直攥着不用，该出手时就出手。"
+  },
+  crazy: {
+    emoji: "🎭",
+    tag: "精神状态稳定型疯子",
+    desc: "你看起来一切正常——上课、吃饭、睡觉、社交，流程一个不落。但只有你自己知道，你的精神状态就像走钢丝，表面稳如老狗，内心随时可能崩塌。你会因为食堂阿姨多打了一块肉开心一整天，也会因为外卖超时半小时陷入存在主义危机。你的情绪起伏没有规律，但你已经学会了和它共处。",
+    eval: "<strong>你的超能力：</strong>在崩溃和自愈之间反复横跳，且不需要任何人帮忙。",
+    advice: "<strong>💡 小建议：</strong>情绪波动大不是你的问题，允许自己偶尔发疯，然后继续好好生活。"
+  },
+  shekong: {
+    emoji: "🤐",
+    tag: "社恐话痨",
+    desc: "你是一个矛盾体：在陌生人面前安静如鸡，在熟人面前话多到烦人。你的内心戏比甄嬛传还精彩，但嘴上一个字都说不出来。群聊里你是窥屏王者，现实中你是透明人。你不是不想社交，是社交消耗了你太多电量，需要独处三天才能回血。",
+    eval: "<strong>你的日常：</strong>出门前想好一百句开场白，见面后只说了\"嗯\"。",
+    advice: "<strong>💡 小建议：</strong>不用强迫自己变社牛，找到几个能让你放松做自己的朋友就够了。"
+  },
+  foxi: {
+    emoji: "🧘",
+    tag: "佛系边缘人",
+    desc: "你是大学生活的\"观察者\"。社团活动你参加，但永远不是最活跃的那个；群聊你在，但很少发言；聚会你去，但大部分时间在安静地吃东西。你不是不合群，只是觉得\"都行\"。不主动、不拒绝、不负责，是你的生存哲学。你享受一个人的时光，也不排斥热闹，但热闹过后你需要独处来充电。",
+    eval: "<strong>你的隐藏技能：</strong>在任何场合都能找到最舒服的角落待着。",
+    advice: "<strong>💡 小建议：</strong>佛系不是消极，是你选择的生活节奏，不用因为别人活跃而焦虑。"
+  },
+  hutu: {
+    emoji: "😵",
+    tag: "快乐小糊涂",
+    desc: "你的人生信条是\"差不多得了\"。你记不清自己的课表，经常走错教室；你不知道自己还有多少钱，反正能花就花；你答应别人的事转头就忘，但好在大家都习惯了。你不是笨，你只是把脑容量留给了更重要的事——比如今天吃什么、追的剧更新了没。糊涂是你的保护色，快乐是你的终极目标。",
+    eval: "<strong>你的超能力：</strong>忘性大，所以从来不记仇，也从来不记作业。",
+    advice: "<strong>💡 小建议：</strong>快乐很重要，但ddl和生活费还是要记一下的，建议设个闹钟。"
+  },
+  abstract: {
+    emoji: "🎨",
+    tag: "纯抽象艺术家",
+    desc: "你的大学生活主打一个\"难以评价\"。作息混乱、消费混乱、社交混乱，但你乐在其中。你会在凌晨三点突然决定整理桌面，也会在中午十二点纠结早饭吃什么。你的朋友圈充满了别人看不懂的动态，但你觉得每一条都很有道理。你不按常理出牌，也没人能预测你下一步要干嘛——包括你自己。",
+    eval: "<strong>你的人生格言：</strong>\"计划赶不上变化，所以我选择不计划。\"",
+    advice: "<strong>💡 小建议：</strong>抽象是你的特色，但记得留一点余地给现实，比如别把生活费全花在奇怪的东西上。"
+  }
+};
+
+let currentQ = 0;
+let scores = { A: 0, B: 0, C: 0, D: 0 };
+
+function startTest() {
+  currentQ = 0;
+  scores = { A: 0, B: 0, C: 0, D: 0 };
+  showScreen("quiz");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  document.getElementById("progress").style.width = ((currentQ + 1) / questions.length * 100) + "%";
+  document.getElementById("qTag").textContent = q.tag;
+  document.getElementById("qText").textContent = (currentQ + 1) + ". " + q.q;
+  const optsDiv = document.getElementById("options");
+  optsDiv.innerHTML = "";
+  const labels = ["A", "B", "C", "D"];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.textContent = labels[i] + ". " + opt;
+    btn.onclick = () => selectOption(labels[i]);
+    optsDiv.appendChild(btn);
+  });
+}
+
+function selectOption(label) {
+  scores[label]++;
+  currentQ++;
+  if (currentQ < questions.length) {
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  // 计算主维度和次维度，差值≥2为纯类型，否则为混合型
+  const entries = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const [top1, top2] = entries;
+  const diff = top1[1] - top2[1];
+
+  let typeKey;
+  const pair = top1[0] + top2[0];
+
+  if (diff >= 2) {
+    // 纯类型
+    typeKey = { A: "ddl", B: "crazy", C: "foxi", D: "abstract" }[top1[0]];
+  } else {
+    // 混合型，根据主次维度组合映射
+    const map = {
+      "AB": "ddl", "BA": "ddl",       // 积极+情绪 → ddl战神（行动力强）
+      "AC": "juan", "CA": "juan",     // 积极+佛系 → 卷王本王（暗卷）
+      "AD": "bailan", "DA": "bailan", // 积极+随性 → 天赋型摆烂
+      "BC": "shekong", "CB": "shekong", // 情绪+佛系 → 社恐话痨
+      "BD": "crazy", "DB": "crazy",   // 情绪+随性 → 精神状态稳定型疯子
+      "CD": "hutu", "DC": "hutu"      // 佛系+随性 → 快乐小糊涂
+    };
+    typeKey = map[pair] || "foxi";
+  }
+
+  const r = results[typeKey];
+  document.getElementById("rEmoji").textContent = r.emoji;
+  document.getElementById("rTag").textContent = r.tag;
+  document.getElementById("rDesc").textContent = r.desc;
+  document.getElementById("rEval").innerHTML = r.eval;
+  document.getElementById("rAdvice").innerHTML = r.advice;
+  showScreen("result");
+  drawRadar();
+}
+
+function drawRadar() {
+  const canvas = document.getElementById("radarCanvas");
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const size = 280;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width = size + "px";
+  canvas.style.height = size + "px";
+  ctx.scale(dpr, dpr);
+
+  const cx = size / 2;
+  const cy = size / 2;
+  const radius = 100;
+  const dims = [
+    { label: "靠谱指数", value: scores.A },
+    { label: "戏精指数", value: scores.B },
+    { label: "佛系指数", value: scores.C },
+    { label: "抽象指数", value: scores.D }
+  ];
+  const n = dims.length;
+  const angleStep = (Math.PI * 2) / n;
+
+  ctx.clearRect(0, 0, size, size);
+
+  // 画网格（4层）
+  for (let level = 1; level <= 4; level++) {
+    const r = (radius / 4) * level;
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const angle = -Math.PI / 2 + i * angleStep;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = "#e0e0ee";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // 画轴线
+  for (let i = 0; i < n; i++) {
+    const angle = -Math.PI / 2 + i * angleStep;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + radius * Math.cos(angle), cy + radius * Math.sin(angle));
+    ctx.strokeStyle = "#d0d0e0";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // 画数据多边形
+  ctx.beginPath();
+  for (let i = 0; i < n; i++) {
+    const angle = -Math.PI / 2 + i * angleStep;
+    const val = dims[i].value / 10; // 归一化 0-1
+    const r = radius * val;
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = "rgba(102, 126, 234, 0.25)";
+  ctx.fill();
+  ctx.strokeStyle = "#667eea";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // 画数据点
+  for (let i = 0; i < n; i++) {
+    const angle = -Math.PI / 2 + i * angleStep;
+    const val = dims[i].value / 10;
+    const r = radius * val;
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = "#667eea";
+    ctx.fill();
+  }
+
+  // 画标签
+  ctx.fillStyle = "#555";
+  ctx.font = "13px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  for (let i = 0; i < n; i++) {
+    const angle = -Math.PI / 2 + i * angleStep;
+    const labelR = radius + 22;
+    const x = cx + labelR * Math.cos(angle);
+    const y = cy + labelR * Math.sin(angle);
+    ctx.fillText(dims[i].label, x, y);
+  }
+}
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function shareResult() {
+  alert("请截屏保存结果页，然后发给室友或朋友圈～");
+}
+
+function restart() {
+  showScreen("start");
+}
+</script>
+</body>
+</html>
